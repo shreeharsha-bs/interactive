@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive AFM Bias Analysis</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .subtitle {
+            color: #718096;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+        .info-box {
+            background: #f7fafc;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .info-box h3 {
+            margin-top: 0;
+            color: #4a5568;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 24px;
+            text-decoration: none;
+            color: #2d3748;
+            transition: all 0.3s ease;
+            display: block;
+        }
+        .card:hover {
+            border-color: #667eea;
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+        .card h3 {
+            margin: 0 0 10px 0;
+            color: #667eea;
+            font-size: 1.3em;
+        }
+        .card p {
+            margin: 0;
+            color: #718096;
+            font-size: 0.95em;
+        }
+        .stats {
+            display: flex;
+            gap: 30px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        .stat {
+            flex: 1;
+            min-width: 150px;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            color: #718096;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .features {
+            list-style: none;
+            padding: 0;
+        }
+        .features li {
+            padding: 8px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+        .features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Interactive AFM Bias Analysis</h1>
+        <p class="subtitle">Exploring intersectional bias in Audio Foundation Models across accents, gender, and hesitation patterns</p>
+        
+        <div class="info-box">
+            <h3>📊 About This Visualization</h3>
+            <p>This interactive analysis uses Principal Component Analysis (PCA) to visualize how different Audio Foundation Models (AFMs) respond to various demographic and contextual factors. Each plot allows you to:</p>
+            <ul class="features">
+                <li><strong>Hover</strong> over any point to see the full question and response</li>
+                <li><strong>Click</strong> legend items to filter specific groups</li>
+                <li><strong>Zoom</strong> and pan to explore clusters in detail</li>
+                <li><strong>Compare</strong> how accent, gender, and hesitation affect model responses</li>
+            </ul>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number">2526</div>
+                <div class="stat-label">Total Responses</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Models</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">6</div>
+                <div class="stat-label">Accents</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">8</div>
+                <div class="stat-label">Question Types</div>
+            </div>
+        </div>
+        
+        <h2 style="margin-top: 40px; color: #2d3748;">Select a Question Type to Explore:</h2>
+        <div class="grid">
+
+            <a href="interactive_academic_advice.html" class="card">
+                <h3>Academic Advice</h3>
+                <p>Seeking academic and career guidance</p>
+                <p style="margin-top: 10px; font-weight: 600; color: #667eea;">315 responses →</p>
+            </a>
+
+            <a href="interactive_customer_service.html" class="card">
+                <h3>Customer Service</h3>
+                <p>Handling customer service interactions</p>
+                <p style="margin-top: 10px; font-weight: 600; color: #667eea;">315 responses →</p>
+            </a>
+
+            <a href="interactive_difficult_coworker.html" class="card">
+                <h3>Difficult Coworker</h3>
+                <p>Addressing credit-taking by a colleague</p>
+                <p style="margin-top: 10px; font-weight: 600; color: #667eea;">315 responses →</p>
+            </a>
+
+            <a href="interactive_housing_inquiry.html" class="card">
+                <h3>Housing Inquiry</h3>
+                <p>Inquiring about rental property requirements</p>
+                <p style="margin-top: 10px; font-weight: 600; color: #667eea;">315 responses →</p>
+            </a>
+
+            <a href="interactive_project_management.html" class="card">
+                <h3>Project Management</h3>
+                <p>Managing team projects and delegation</p>
+                <p style="margin-top: 10px; font-weight: 600; color: #667eea;">315 responses →</p>
+            </a>
+
+            <a href="interactive_safety_report.html" class="card">
+                <h3>Safety Report</h3>
+                <p>Reporting safety concerns to management</p>
+                <p style="margin-top: 10px; font-weight: 600; color: #667eea;">315 responses →</p>
+            </a>
+
+            <a href="interactive_salary_increase.html" class="card">
+                <h3>Salary Increase</h3>
+                <p>Requesting a salary raise from a supervisor</p>
+                <p style="margin-top: 10px; font-weight: 600; color: #667eea;">325 responses →</p>
+            </a>
+
+            <a href="interactive_social_networking.html" class="card">
+                <h3>Social Networking</h3>
+                <p>Building social connections and friendships</p>
+                <p style="margin-top: 10px; font-weight: 600; color: #667eea;">311 responses →</p>
+            </a>
+
+        </div>
+        
+        <div class="info-box" style="margin-top: 40px;">
+            <h3>🔍 Understanding the Visualizations</h3>
+            <p><strong>PCA Plots:</strong> Each visualization shows 4 subplots examining different aspects of bias:</p>
+            <ul class="features">
+                <li><strong>Accent (with Gender)</strong>: Colors = accents, Shapes = gender (★ female, ● male)</li>
+                <li><strong>Model</strong>: Compare responses across different AFMs</li>
+                <li><strong>Gender (with Hesitation)</strong>: Colors = gender, Shapes = hesitation (▲ with, ● without)</li>
+                <li><strong>Hesitation</strong>: Direct comparison of hesitation patterns</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>Metrics:</strong> Points are positioned based on 6 response quality metrics including semantic similarity, BERT F1, BLEU, ROUGE-L, word count, and character count.</p>
+        </div>
+        
+        <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; color: #718096;">
+            <p>Interactive Visualization for IUI 2025 | Generated with Plotly</p>
+        </footer>
+    </div>
+</body>
+</html>
