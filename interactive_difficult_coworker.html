@@ -75,6 +75,36 @@
         }
     }
     .hoverlayer { display: none !important; pointer-events: none !important; }
+    #legend-section {
+        margin-top: 30px;
+        padding: 20px;
+        background: #f7fafc;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+    }
+    #legend-section h3 {
+        margin-top: 0;
+        color: #2d3748;
+        font-size: 1.2em;
+    }
+    #legend-section .legend-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+    }
+    #legend-section .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    #legend-section .legend-symbol {
+        font-size: 20px;
+    }
+    #legend-section .legend-text {
+        color: #4a5568;
+        font-size: 14px;
+    }
 
     #hover-content .metadata-grid {
         display: grid;
@@ -215,7 +245,7 @@
             // Since we don't have the exact index, we'll use a placeholder
             // In production, you'd need to pass the actual file path via customdata
             
-            const basePath = '../edacc-slm-questions/dataset';
+            const basePath = 'dataset';
             const audioPath = `${basePath}/${accentSlug}/${genderSlug}/${hesitationSlug}/`;
             
             return audioPath;
@@ -300,6 +330,31 @@
 </script>
 </body>
 </html>
+        <div id="legend-section">
+            <h3>📊 Plot Legend Guide</h3>
+            <div class="legend-grid">
+                <div class="legend-item">
+                    <span class="legend-symbol">●</span>
+                    <span class="legend-text"><strong>Male</strong> (Circle markers)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-symbol">★</span>
+                    <span class="legend-text"><strong>Female</strong> (Star markers)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-symbol">▲</span>
+                    <span class="legend-text"><strong>With Hesitation</strong> (Triangle markers)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-symbol">●</span>
+                    <span class="legend-text"><strong>No Hesitation</strong> (Circle markers)</span>
+                </div>
+            </div>
+            <p style="margin-top: 15px; color: #718096; font-size: 13px;">
+                <strong>Tip:</strong> Click legend items in the plots above to toggle visibility. 
+                Hover or click on data points to see full details in the sidebar.
+            </p>
+        </div>
     </div>
     <div id="hover-panel">
         <h2>Details</h2>
@@ -392,7 +447,7 @@
             // Since we don't have the exact index, we'll use a placeholder
             // In production, you'd need to pass the actual file path via customdata
             
-            const basePath = '../edacc-slm-questions/dataset';
+            const basePath = 'dataset';
             const audioPath = `${basePath}/${accentSlug}/${genderSlug}/${hesitationSlug}/`;
             
             return audioPath;
