@@ -153,6 +153,63 @@
         font-size: 12px;
         margin-top: 5px;
     }
+
+    #hover-content .metadata-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    #hover-content .metadata-item {
+        padding: 10px;
+        background: white;
+        border-radius: 5px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    #hover-content .metadata-label {
+        font-weight: bold;
+        color: #667eea;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: block;
+        margin-bottom: 4px;
+    }
+    #hover-content .metadata-value {
+        color: #2d3748;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    #hover-content .audio-section {
+        margin: 20px 0;
+        padding: 15px;
+        background: white;
+        border-radius: 5px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    #hover-content .audio-section .detail-label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: #2d3748;
+    }
+    #hover-content audio {
+        width: 100%;
+        margin-top: 8px;
+        border-radius: 4px;
+        outline: none;
+    }
+    #hover-content audio:focus {
+        outline: 2px solid #667eea;
+        outline-offset: 2px;
+    }
+    #hover-content .no-audio-message {
+        color: #718096;
+        font-style: italic;
+        font-size: 12px;
+        margin-top: 5px;
+    }
 </style>
 </head>
 <body>
@@ -288,6 +345,182 @@
             `;
             
             hoverContent.innerHTML = enhancedHTML;
+        }
+        
+        // Add event listeners
+        plotDiv.on('plotly_click', updateSidebar);
+        plotDiv.on('plotly_hover', updateSidebar);
+        
+        console.log('Enhanced hover functionality initialized');
+    }
+})();
+</script>
+
+<script>
+(function() {
+    'use strict';
+    
+    // Wait for Plotly to fully load
+    const checkPlotly = setInterval(() => {
+        const plotDiv = document.querySelector('.plotly-graph-div');
+        if (plotDiv && window.Plotly) {
+            clearInterval(checkPlotly);
+            initializeEnhancedHover();
+        }
+    }, 100);
+    
+    function initializeEnhancedHover() {
+        const plotDiv = document.querySelector('.plotly-graph-div');
+        const hoverContent = document.getElementById('hover-content');
+        
+        if (!plotDiv || !hoverContent) {
+            console.error('Required elements not found');
+            return;
+        }
+        
+        // Helper function to format text
+        function formatLabel(text) {
+            if (!text) return 'N/A';
+            return text.toString()
+                .split('_')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+        }
+        
+        // Helper function to extract metadata from hover text
+        function extractMetadata(hoverText) {
+            const metadata = {
+                accent: 'N/A',
+                gender: 'N/A',
+                hesitation: 'N/A',
+                model: 'N/A',
+                prompt: '',
+                response: ''
+            };
+            
+            if (!hoverText) return metadata;
+            
+            // Extract using regex patterns
+            const modelMatch = hoverText.match(/<b>Model:<\/b>\s*([^<]+)/i);
+            const accentMatch = hoverText.match(/<b>Accent:<\/b>\s*([^<]+)/i);
+            const genderMatch = hoverText.match(/<b>Gender:<\/b>\s*([^<]+)/i);
+            const hesitationMatch = hoverText.match(/<b>Hesitation:<\/b>\s*([^<]+)/i);
+            const promptMatch = hoverText.match(/<b>Question:<\/b><br>([\s\S]*?)(?=<br><br><b>Response:|$)/i);
+            const responseMatch = hoverText.match(/<b>Response:<\/b><br>([\s\S]*?)$/i);
+            
+            if (modelMatch) metadata.model = modelMatch[1].trim();
+            if (accentMatch) metadata.accent = accentMatch[1].trim();
+            if (genderMatch) metadata.gender = genderMatch[1].trim();
+            if (hesitationMatch) metadata.hesitation = hesitationMatch[1].trim();
+            if (promptMatch) metadata.prompt = promptMatch[1].trim();
+            if (responseMatch) metadata.response = responseMatch[1].trim();
+            
+            return metadata;
+        }
+        
+        // Function to update the sidebar with enhanced information
+        function updateSidebar(pointData) {
+            if (!pointData || !pointData.points || pointData.points.length === 0) {
+                return;
+            }
+            
+            const point = pointData.points[0];
+            const hoverText = point.text || '';
+            
+            // Extract metadata from hover text
+            const meta = extractMetadata(hoverText);
+            
+            // Get audio path from customdata
+            const audioPath = point.customdata && point.customdata[0] ? point.customdata[0] : '';
+            
+            // Build the enhanced HTML
+            const enhancedHTML = `
+                <div class="metadata-grid">
+                    <div class="metadata-item">
+                        <span class="metadata-label">Accent</span>
+                        <span class="metadata-value">${meta.accent}</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">Gender</span>
+                        <span class="metadata-value">${meta.gender}</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">Hesitation</span>
+                        <span class="metadata-value">${meta.hesitation}</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">Model</span>
+                        <span class="metadata-value">${meta.model}</span>
+                    </div>
+                </div>
+                
+                <div class="audio-section">
+                    <span class="detail-label">🎵 Audio Input</span>
+                    ${audioPath ? `
+                        <audio id="audio-player" controls preload="metadata" controlsList="nodownload" style="width: 100%; margin-top: 8px;">
+                            <source src="${audioPath}" type="audio/wav">
+                            Your browser does not support audio playback.
+                        </audio>
+                    ` : '<div class="no-audio-message">Audio not available for this item.</div>'}
+                </div>
+                
+                ${meta.prompt ? `
+                <div class="detail-item">
+                    <span class="detail-label">Input</span>
+                    <div class="question-text">${meta.prompt}</div>
+                </div>
+                ` : ''}
+                
+                ${meta.response ? `
+                <div class="detail-item">
+                    <span class="detail-label">Response</span>
+                    <div class="response-text">${meta.response}</div>
+                </div>
+                ` : ''}
+            `;
+            
+            hoverContent.innerHTML = enhancedHTML;
+            
+            // Enhanced audio player functionality
+            const audioPlayer = document.getElementById('audio-player');
+            if (audioPlayer) {
+                // Auto-load the audio metadata
+                audioPlayer.load();
+                
+                // Add visual feedback when audio is playing
+                audioPlayer.addEventListener('play', function() {
+                    const audioSection = audioPlayer.closest('.audio-section');
+                    if (audioSection) {
+                        audioSection.style.borderLeft = '4px solid #667eea';
+                        audioSection.style.background = '#f0f4ff';
+                    }
+                });
+                
+                audioPlayer.addEventListener('pause', function() {
+                    const audioSection = audioPlayer.closest('.audio-section');
+                    if (audioSection) {
+                        audioSection.style.borderLeft = 'none';
+                        audioSection.style.background = 'white';
+                    }
+                });
+                
+                audioPlayer.addEventListener('ended', function() {
+                    const audioSection = audioPlayer.closest('.audio-section');
+                    if (audioSection) {
+                        audioSection.style.borderLeft = 'none';
+                        audioSection.style.background = 'white';
+                    }
+                });
+                
+                // Add error handling
+                audioPlayer.addEventListener('error', function() {
+                    const audioSection = audioPlayer.closest('.audio-section');
+                    if (audioSection) {
+                        audioSection.querySelector('.detail-label').textContent = '🎵 Audio Input (unavailable)';
+                        audioSection.querySelector('.detail-label').style.color = '#a0aec0';
+                    }
+                });
+            }
         }
         
         // Add event listeners
@@ -460,6 +693,182 @@
             `;
             
             hoverContent.innerHTML = enhancedHTML;
+        }
+        
+        // Add event listeners
+        plotDiv.on('plotly_click', updateSidebar);
+        plotDiv.on('plotly_hover', updateSidebar);
+        
+        console.log('Enhanced hover functionality initialized');
+    }
+})();
+</script>
+
+<script>
+(function() {
+    'use strict';
+    
+    // Wait for Plotly to fully load
+    const checkPlotly = setInterval(() => {
+        const plotDiv = document.querySelector('.plotly-graph-div');
+        if (plotDiv && window.Plotly) {
+            clearInterval(checkPlotly);
+            initializeEnhancedHover();
+        }
+    }, 100);
+    
+    function initializeEnhancedHover() {
+        const plotDiv = document.querySelector('.plotly-graph-div');
+        const hoverContent = document.getElementById('hover-content');
+        
+        if (!plotDiv || !hoverContent) {
+            console.error('Required elements not found');
+            return;
+        }
+        
+        // Helper function to format text
+        function formatLabel(text) {
+            if (!text) return 'N/A';
+            return text.toString()
+                .split('_')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+        }
+        
+        // Helper function to extract metadata from hover text
+        function extractMetadata(hoverText) {
+            const metadata = {
+                accent: 'N/A',
+                gender: 'N/A',
+                hesitation: 'N/A',
+                model: 'N/A',
+                prompt: '',
+                response: ''
+            };
+            
+            if (!hoverText) return metadata;
+            
+            // Extract using regex patterns
+            const modelMatch = hoverText.match(/<b>Model:<\/b>\s*([^<]+)/i);
+            const accentMatch = hoverText.match(/<b>Accent:<\/b>\s*([^<]+)/i);
+            const genderMatch = hoverText.match(/<b>Gender:<\/b>\s*([^<]+)/i);
+            const hesitationMatch = hoverText.match(/<b>Hesitation:<\/b>\s*([^<]+)/i);
+            const promptMatch = hoverText.match(/<b>Question:<\/b><br>([\s\S]*?)(?=<br><br><b>Response:|$)/i);
+            const responseMatch = hoverText.match(/<b>Response:<\/b><br>([\s\S]*?)$/i);
+            
+            if (modelMatch) metadata.model = modelMatch[1].trim();
+            if (accentMatch) metadata.accent = accentMatch[1].trim();
+            if (genderMatch) metadata.gender = genderMatch[1].trim();
+            if (hesitationMatch) metadata.hesitation = hesitationMatch[1].trim();
+            if (promptMatch) metadata.prompt = promptMatch[1].trim();
+            if (responseMatch) metadata.response = responseMatch[1].trim();
+            
+            return metadata;
+        }
+        
+        // Function to update the sidebar with enhanced information
+        function updateSidebar(pointData) {
+            if (!pointData || !pointData.points || pointData.points.length === 0) {
+                return;
+            }
+            
+            const point = pointData.points[0];
+            const hoverText = point.text || '';
+            
+            // Extract metadata from hover text
+            const meta = extractMetadata(hoverText);
+            
+            // Get audio path from customdata
+            const audioPath = point.customdata && point.customdata[0] ? point.customdata[0] : '';
+            
+            // Build the enhanced HTML
+            const enhancedHTML = `
+                <div class="metadata-grid">
+                    <div class="metadata-item">
+                        <span class="metadata-label">Accent</span>
+                        <span class="metadata-value">${meta.accent}</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">Gender</span>
+                        <span class="metadata-value">${meta.gender}</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">Hesitation</span>
+                        <span class="metadata-value">${meta.hesitation}</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">Model</span>
+                        <span class="metadata-value">${meta.model}</span>
+                    </div>
+                </div>
+                
+                <div class="audio-section">
+                    <span class="detail-label">🎵 Audio Input</span>
+                    ${audioPath ? `
+                        <audio id="audio-player" controls preload="metadata" controlsList="nodownload" style="width: 100%; margin-top: 8px;">
+                            <source src="${audioPath}" type="audio/wav">
+                            Your browser does not support audio playback.
+                        </audio>
+                    ` : '<div class="no-audio-message">Audio not available for this item.</div>'}
+                </div>
+                
+                ${meta.prompt ? `
+                <div class="detail-item">
+                    <span class="detail-label">Input</span>
+                    <div class="question-text">${meta.prompt}</div>
+                </div>
+                ` : ''}
+                
+                ${meta.response ? `
+                <div class="detail-item">
+                    <span class="detail-label">Response</span>
+                    <div class="response-text">${meta.response}</div>
+                </div>
+                ` : ''}
+            `;
+            
+            hoverContent.innerHTML = enhancedHTML;
+            
+            // Enhanced audio player functionality
+            const audioPlayer = document.getElementById('audio-player');
+            if (audioPlayer) {
+                // Auto-load the audio metadata
+                audioPlayer.load();
+                
+                // Add visual feedback when audio is playing
+                audioPlayer.addEventListener('play', function() {
+                    const audioSection = audioPlayer.closest('.audio-section');
+                    if (audioSection) {
+                        audioSection.style.borderLeft = '4px solid #667eea';
+                        audioSection.style.background = '#f0f4ff';
+                    }
+                });
+                
+                audioPlayer.addEventListener('pause', function() {
+                    const audioSection = audioPlayer.closest('.audio-section');
+                    if (audioSection) {
+                        audioSection.style.borderLeft = 'none';
+                        audioSection.style.background = 'white';
+                    }
+                });
+                
+                audioPlayer.addEventListener('ended', function() {
+                    const audioSection = audioPlayer.closest('.audio-section');
+                    if (audioSection) {
+                        audioSection.style.borderLeft = 'none';
+                        audioSection.style.background = 'white';
+                    }
+                });
+                
+                // Add error handling
+                audioPlayer.addEventListener('error', function() {
+                    const audioSection = audioPlayer.closest('.audio-section');
+                    if (audioSection) {
+                        audioSection.querySelector('.detail-label').textContent = '🎵 Audio Input (unavailable)';
+                        audioSection.querySelector('.detail-label').style.color = '#a0aec0';
+                    }
+                });
+            }
         }
         
         // Add event listeners
